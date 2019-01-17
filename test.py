@@ -8,8 +8,8 @@ SCREEN_WIDTH = 1600
 SCREEN_HEIGHT = 900
 
 SPRITE_SCALE = 2
-MOVEMENT_SPEED = 4
-CAMERA_SPEED = 4
+MOVEMENT_SPEED = 8
+CAMERA_SPEED = 8
 JUMP_SPEED = 13
 
 GRAVITY = 0.5
@@ -38,9 +38,9 @@ class MyGame(arcade.Window):
         self.is_game_over = False
 
     def setup(self):
+        """Setup initial values"""
         # Instanciate the sprite lists
         self.sprite_list = arcade.SpriteList()
-        self.bloc_list = arcade.SpriteList()
 
         # Setup the player
         self.player = Player(120, 120)
@@ -48,18 +48,18 @@ class MyGame(arcade.Window):
 
         # Setup the GUI
         self.score_text = GuiElement(
-            SCREEN_WIDTH - 80,
+            80,
             SCREEN_HEIGHT - 20,
             40,
             40,
-            "SCORE"
+            "MARIO"
         )
         self.score_nb_text = GuiElement(
-            SCREEN_WIDTH - 40,
+            80,
             SCREEN_HEIGHT - 50,
             40,
             40,
-            "100",
+            "0" * 6,
             align="right"
         )
         self.game_over_gui = GuiElement(
@@ -77,12 +77,13 @@ class MyGame(arcade.Window):
         # Load the background
         self.background = arcade.load_texture('Sprites/bg.png', scale=0.5)
 
-        # Get the level bloc list
-        self.generate_level()
+        # Get the level bloc list\
+        self.level = LevelGenerator()
+        # self.generate_level()
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.player,
-            self.bloc_list,
+            self.level.sprite_list,
             gravity_constant=GRAVITY
         )
 
@@ -90,13 +91,14 @@ class MyGame(arcade.Window):
         self.view_bottom = 0
 
     def on_key_press(self, key, modifiers):
+        """Handle the key press"""
         self.player.on_key_press(
             key,
             self.physics_engine.can_jump()
-            # self.jump_sound
         )
 
     def on_key_release(self, key, modifiers):
+        """Handle the key release"""
         self.player.on_key_release(key)
 
     def on_draw(self):
@@ -111,10 +113,10 @@ class MyGame(arcade.Window):
             repeat_count_x=3
         )
         self.sprite_list.draw()
-        self.bloc_list.draw()
+        self.level.draw()
 
         self.score_text.draw()
-        self.score_nb_text.draw()
+        self.score_nb_text.draw_new_text(self.player.score)
 
         if self.player.center_y < 0:
             if self.is_game_over is False:
@@ -130,8 +132,14 @@ class MyGame(arcade.Window):
             self.physics_engine.update()
             self.sprite_list.update()
             self.sprite_list.update_animation()
+            self.level.update(self.player)
+
             if self.physics_engine.can_jump():
                 self.player.update()
+            
+            print(len(arcade.check_for_collision_with_list(self.player, self.level.coin_list)))
+            # self.player.score += 20
+            # print(self.player.score)
 
             changed = False
             if self.player.center_x > SCREEN_WIDTH // 2 + self.view_left:
@@ -145,23 +153,8 @@ class MyGame(arcade.Window):
                                     self.view_bottom,
                                     SCREEN_HEIGHT + self.view_bottom)
 
-    def generate_level(self):
-        for i in range(15):
-            bloc = arcade.Sprite('Sprites/bloc.png', SPRITE_SCALE)
-            bloc.center_x = i * SPRITE_SCALE * 16
-            bloc.center_y = 16
-            self.bloc_list.append(bloc)
-
-        bloc = arcade.Sprite('Sprites/bloc.png', SPRITE_SCALE)
-        bloc.center_x = 16 * SPRITE_SCALE * 16
-        bloc.center_y = 48
-        self.bloc_list.append(bloc)
-        bloc = arcade.Sprite('Sprites/bloc.png', SPRITE_SCALE)
-        bloc.center_x = 16 * SPRITE_SCALE * 16
-        bloc.center_y = 48 + 32
-        self.bloc_list.append(bloc)
-
     def update_gui_position(self, offset=0):
+        """Update the position of the GUI when the camera moves"""
         self.score_text.center_x += CAMERA_SPEED
         self.score_nb_text.center_x += CAMERA_SPEED
         self.game_over_gui.center_x += CAMERA_SPEED
