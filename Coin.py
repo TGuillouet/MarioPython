@@ -1,7 +1,6 @@
 import arcade
 import random
-
-SPRITE_SCALE = 2
+from Consts import SPRITE_SCALE
 
 
 class Coin(arcade.AnimatedTimeSprite):
@@ -9,9 +8,12 @@ class Coin(arcade.AnimatedTimeSprite):
         super().__init__()
         self.center_x = center_x * SPRITE_SCALE * width
         self.center_y = center_y * SPRITE_SCALE * height
-        print(self.center_x)
 
         self.textures = []
-        self.textures.append(arcade.load_texture("Sprites/coin.png", scale=SPRITE_SCALE))
-        self.textures.append(arcade.load_texture("Sprites/coin_01.png", scale=SPRITE_SCALE))
+        self.textures.append(arcade.load_texture(
+            "Sprites/coin.png",
+            scale=SPRITE_SCALE))
+        self.textures.append(arcade.load_texture(
+            "Sprites/coin_01.png",
+            scale=SPRITE_SCALE))
         self.cur_texture_index = random.randrange(len(self.textures))

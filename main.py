@@ -3,16 +3,7 @@ import os
 from Gui import GuiElement
 from Player import Player
 from Level import LevelGenerator
-
-SCREEN_WIDTH = 1600
-SCREEN_HEIGHT = 900
-
-SPRITE_SCALE = 2
-MOVEMENT_SPEED = 8
-CAMERA_SPEED = 8
-JUMP_SPEED = 13
-
-GRAVITY = 0.5
+from Consts import *
 
 
 class MyGame(arcade.Window):
@@ -21,6 +12,7 @@ class MyGame(arcade.Window):
     def __init__(self, width, height):
         super().__init__(width, height)
 
+        # Redefine the main directory
         file_path = os.path.dirname(os.path.abspath(__file__))
         os.chdir(file_path)
 
@@ -30,11 +22,8 @@ class MyGame(arcade.Window):
         self.sprite_list = None
         self.bloc_list = None
         self.background = None
-
         self.score_text = None
-
         self.score_nb_text = None
-
         self.is_game_over = False
 
     def setup(self):
@@ -71,7 +60,6 @@ class MyGame(arcade.Window):
         )
 
         # Init Sounds
-        # self.jump_sound = arcade.sound.load_sound("Sounds/jump.wav")
         self.die_sound = arcade.load_sound('Sounds/die.wav')
 
         # Load the background
@@ -79,7 +67,6 @@ class MyGame(arcade.Window):
 
         # Get the level bloc list\
         self.level = LevelGenerator()
-        # self.generate_level()
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.player,
@@ -88,7 +75,6 @@ class MyGame(arcade.Window):
         )
 
         self.view_left = 0
-        self.view_bottom = 0
 
     def on_key_press(self, key, modifiers):
         """Handle the key press"""
@@ -102,21 +88,21 @@ class MyGame(arcade.Window):
         self.player.on_key_release(key)
 
     def on_draw(self):
-        """ Render the screen. """
+        """ Render the screen (draw all elements) """
         arcade.start_render()
         arcade.draw_texture_rectangle(
-            SCREEN_WIDTH//2 - 32,
-            SCREEN_HEIGHT//2 + (32),
-            (32 * 75) * 3,
+            SCREEN_WIDTH//2 - 48,
+            SCREEN_HEIGHT//2 + 48,
+            self.level.width,
             SCREEN_HEIGHT,
             self.background,
-            repeat_count_x=3
+            repeat_count_x=50
         )
         self.sprite_list.draw()
         self.level.draw()
 
         self.score_text.draw()
-        self.score_nb_text.draw_new_text(self.player.score)
+        self.score_nb_text.draw_new_text(str(self.player.score).zfill(6))
 
         if self.player.center_y < 0:
             if self.is_game_over is False:
@@ -136,22 +122,18 @@ class MyGame(arcade.Window):
 
             if self.physics_engine.can_jump():
                 self.player.update()
-            
-            print(len(arcade.check_for_collision_with_list(self.player, self.level.coin_list)))
-            # self.player.score += 20
-            # print(self.player.score)
 
-            changed = False
+            # Update the score of the player
+            self.player.score += self.level.score_change
+
+            #  Update the camera
             if self.player.center_x > SCREEN_WIDTH // 2 + self.view_left:
                 self.view_left += CAMERA_SPEED
                 self.update_gui_position(self.view_left)
-                changed = True
-
-            if changed:
                 arcade.set_viewport(self.view_left,
                                     SCREEN_WIDTH + self.view_left,
-                                    self.view_bottom,
-                                    SCREEN_HEIGHT + self.view_bottom)
+                                    0,
+                                    SCREEN_HEIGHT)
 
     def update_gui_position(self, offset=0):
         """Update the position of the GUI when the camera moves"""
@@ -163,6 +145,7 @@ class MyGame(arcade.Window):
 def main():
     game = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT)
     game.setup()
+    # game.set_update_rate(0.2)
     arcade.run()
 
 

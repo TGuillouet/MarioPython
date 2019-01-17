@@ -1,29 +1,21 @@
 import arcade
 import random
 from Coin import Coin
-
-SCREEN_WIDTH = 1600
-SCREEN_HEIGHT = 900
-
-SPRITE_SCALE = 2
-MOVEMENT_SPEED = 8
-CAMERA_SPEED = 8
-JUMP_SPEED = 13
-
-GRAVITY = 0.5
+from Consts import SPRITE_SCALE
 
 
 class LevelGenerator:
     def __init__(self):
         self.sprite_list = arcade.SpriteList()
         self.coin_list = arcade.SpriteList()
+        self.width = 0
 
-        f = open('background', 'r')
+        f = open('Levels/1-1.lvl', 'r')
         for y, line in enumerate(self.reverse_lines(f)):
             line = self.split(line.rstrip('\n'))
             for x, value in enumerate(line):
+                self.width += 16 * SPRITE_SCALE
                 if value != '0':
-                    # print(value)
                     bloc = None
                     if value == '1':
                         bloc = arcade.Sprite(
@@ -72,12 +64,18 @@ class LevelGenerator:
         self.coin_list.draw()
 
     def update(self, player):
+        self.score_change = 0
         self.coin_list.update()
         self.coin_list.update_animation()
-        for coin in arcade.check_for_collision_with_list(player, self.coin_list):
-            print(coin)
-            coin.kill()
-            self.player.score += 200
+
+        for coin in self.coin_list:
+            if coin.left < player.right\
+                and coin.right > player.left\
+                and coin.top > player.bottom\
+                and coin.bottom < player.top:
+                arcade.play_sound(arcade.load_sound('Sounds/coin.wav'))
+                coin.kill()
+                self.score_change += 200
 
     def split(self, str):
         return [str[start+1] for start in range(0, len(str) - 1, 1)]
