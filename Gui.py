@@ -26,3 +26,9 @@ class GuiElement:
                          arcade.color.BLACK, font_size=self.font_size,
                          width=self.width, align=self.align,
                          anchor_x="center", anchor_y="center")
+
+    def draw_new_text(self, new_text=''):
+        arcade.draw_text(str(new_text), self.center_x, self.center_y,
+                         arcade.color.BLACK, font_size=self.font_size,
+                         width=self.width, align=self.align,
+                         anchor_x="center", anchor_y="center")

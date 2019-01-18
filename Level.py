@@ -6,11 +6,15 @@ from Consts import SPRITE_SCALE
 
 class LevelGenerator:
     def __init__(self):
+        """Generate the level"""
         self.sprite_list = arcade.SpriteList()
         self.coin_list = arcade.SpriteList()
         self.width = 0
 
+        # Open the level
         f = open('Levels/1-1.lvl', 'r')
+
+        # Create all blocs
         for y, line in enumerate(self.reverse_lines(f)):
             line = self.split(line.rstrip('\n'))
             for x, value in enumerate(line):
@@ -53,21 +57,26 @@ class LevelGenerator:
                             SPRITE_SCALE
                         )
                     elif value == '8':
+                        # Creae a new coin
                         self.coin_list.append(Coin(x, y))
                         continue
+                    # Set bloc base data
                     bloc.center_x = x * bloc.width
                     bloc.center_y = y * bloc.height
                     self.sprite_list.append(bloc)
 
     def draw(self):
+        """Draw all lists"""
         self.sprite_list.draw()
         self.coin_list.draw()
 
     def update(self, player):
+        """Update the level state"""
         self.score_change = 0
         self.coin_list.update()
         self.coin_list.update_animation()
 
+        # Check collisions in all coins
         for coin in self.coin_list:
             if coin.left < player.right\
                 and coin.right > player.left\
@@ -78,9 +87,11 @@ class LevelGenerator:
                 self.score_change += 200
 
     def split(self, str):
+        """Split the level string"""
         return [str[start+1] for start in range(0, len(str) - 1, 1)]
 
     def reverse_lines(self, file):
+        """Reverse the file lines"""
         lines = []
         for line in reversed(file.readlines()):
             lines.append(line.rstrip('\n'))

@@ -145,7 +145,6 @@ class MyGame(arcade.Window):
 def main():
     game = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT)
     game.setup()
-    # game.set_update_rate(0.2)
     arcade.run()
 
 
