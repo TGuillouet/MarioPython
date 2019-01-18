@@ -1,14 +1,5 @@
 import arcade
-
-SCREEN_WIDTH = 1600
-SCREEN_HEIGHT = 900
-
-SPRITE_SCALE = 2
-MOVEMENT_SPEED = 8
-CAMERA_SPEED = 4
-JUMP_SPEED = 13
-
-GRAVITY = 0.5
+from Consts import SPRITE_SCALE, MOVEMENT_SPEED, JUMP_SPEED
 
 
 class Player(arcade.AnimatedWalkingSprite):
@@ -21,8 +12,13 @@ class Player(arcade.AnimatedWalkingSprite):
         self.score = 0
 
         # Init animations
-        self.stand_right_textures = [arcade.load_texture("Sprites/mario_idle.png", scale=SPRITE_SCALE)]
-        self.stand_left_textures = [arcade.load_texture("Sprites/mario_idle.png", scale=SPRITE_SCALE, mirrored=True)]
+        self.stand_right_textures = [arcade.load_texture(
+            "Sprites/mario_idle.png",
+            scale=SPRITE_SCALE)]
+        self.stand_left_textures = [arcade.load_texture(
+            "Sprites/mario_idle.png",
+            scale=SPRITE_SCALE,
+            mirrored=True)]
         self.walk_right_textures = self.initWalk()
         self.walk_left_textures = self.initWalk(is_mirrored=True)
 
@@ -52,11 +48,12 @@ class Player(arcade.AnimatedWalkingSprite):
 
     def update(self):
         """When the player needs to be updated"""
-        if len(self.walk_right_textures) == 1 and len(self.walk_left_textures) == 1:
-            self.stand_right_textures = [arcade.load_texture("Sprites/mario_idle.png", scale=SPRITE_SCALE)]
-            self.stand_left_textures = [arcade.load_texture("Sprites/mario_idle.png", scale=SPRITE_SCALE, mirrored=True)]
-            self.walk_right_textures = self.initWalk()
-            self.walk_left_textures = self.initWalk(is_mirrored=True)
+        # if len(self.walk_right_textures) == 1 and len(self.walk_left_textures) == 1:
+        #     self.stand_right_textures = [arcade.load_texture("Sprites/mario_idle.png", scale=SPRITE_SCALE)]
+        #     self.stand_left_textures = [arcade.load_texture("Sprites/mario_idle.png", scale=SPRITE_SCALE, mirrored=True)]
+        #     self.walk_right_textures = self.initWalk()
+        #     self.walk_left_textures = self.initWalk(is_mirrored=True)
+        pass
 
     def on_key_press(self, key, can_jump):
         """Handle all """
